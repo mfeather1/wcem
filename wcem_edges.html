@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head>
+ <title> Working Corner/Edge Method - Testing an Edge Solving Strategy </title>
+ <meta name="robots" content="noindex, nofollow">
+ <link rel=icon href=mini_cube.png type=image/png>
+ <link rel="stylesheet" type="text/css" href="style.css">
+ <meta name=viewport content="width=device-width, initial-scale=1">
+  <style> td {text-align:center} </style>
+</head>
+<body>
+<center>
+<font size="+2"> 
+Working Corner/Edge Method <br>
+Testing an Edge Solving Strategy </font>
+<br><br>
+<p> There are many ways to solve the edges in the top layer using the Working 
+Corner/Edge Method.
+To test a strategy on all possible configurations (programmatically) it can be 
+defined as a list of sequences and instructions on how they are used.
+The following is an example definition of a strategy and the results of using
+it on all possible configurations.
+<br><br>
+<p><b>Sequences</b><br><br>
+The following sequences are used to solve the working edge cubie (FR).
+Only the movement of the working edge cubie is relevant here, the others can
+be ignored (they don't normally all get solved until the end). 
+</p>
+<br>
+<table>
+ <tr>
+  <td> FR -&gt; UF <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=U'RUR'&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td width=40>
+  <td> FR -&gt; FU <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=F'UFU'&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td width=40>
+  <td> FR -&gt; RU <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=UF'U'F&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td width=40>
+  <td> FR -&gt; UR <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=RU'R'U&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+ </tr>
+ <tr height=30>
+ <tr>
+  <td> FR -&gt; UL <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=U2RU2R'&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td>
+  <td> FR -&gt; LU <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=U'F'UF&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb">
+   </iframe>
+  </td>
+  <td>
+  <td> FR -&gt; UB <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=URU'R'&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td>
+  <td> FR -&gt; BU <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=U2F'U2F&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+ </tr>
+</table>
+<br><br>
+<p>The following sequences are used to move a cubie from the top layer
+to the working edge.
+Only the movement of the indicated cubie is relevant in each case, the others
+can be ignored.</p>
+<br>
+<table>
+ <tr>
+  <td> UF -&gt; FR <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&textsize=16&move=RU'R'U&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td width=40>
+  <td>  UR -&gt; RF <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&textsize=16&move=F'UFU'&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td width=40>
+  <td>  UL -&gt; FR  <br>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&textsize=16&move=RU2R'U2&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+  <td width=40>
+  <td> UB -&gt; FR <br> 
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+     src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&textsize=16&move=RUR'U'&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb"> 
+   </iframe>
+  </td>
+ </tr>
+</table>
+<br><br>
+<p>The following are used to solve configurations where two cubies are swapped
+and will be referred to as "Solve Sequences".
+An interesting feature of these sequences is that the inverses also work.</p>
+<table>
+ <tr>
+  <td>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+    src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=URUR'URUR'U&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb">
+   </iframe>
+  </td>
+  <td width=70>
+  <td>
+   <iframe width=140 height=160 scrolling=no frameborder=0 
+    src="AnimCube.html?config=AnimCube.cfg&edit=1&scale=2&movetext=1&initrevmove=%23&textsize=16&move=UF'UFUF'UFU&facelets=lrlrrrlrlooooooloolyyyyylyllwwwwwlwwlglgggggglblbbblbb">
+   </iframe>
+  </td>
+ </tr>
+</table>
+<br>
+<p><b>Instructions</b> 
+<br><br>
+<u>Overview</u><br>
+Solve the UL and UB positions first, then UF and UR.
+Half of the configurations will require one of the above two Solve Sequences to
+complete the solution.
+<br><br>
+<u>Details</u><br>
+1. For the first move, if both UL and UB positions are unsolved then if either
+(or both) can be solved by twisting the top face then do so, otherwise continue
+to next step.
+<br><br>
+2. If the working edge is the UL or UB cubie then solve it.
+<br><br>
+3. If the UL or UB position is unsolved then move a cubie that belongs in the
+UL or UB position to the working edge.
+<br><br>
+4. After the UL and UB positions are solved, if the working edge is the UF or
+UR cubie then solve it otherwise move a cubie that should be in the UF or UR
+position to the working edge.
+<br><br>
+5. Use the above two Solve Sequences where applicable.
+<br><br>
+<b>Results</b>
+<br><br>
+<p>The following shows a summary of the <a href=wcem_edges_t1.log>log</a> from
+a program using the above sequences/instructions to solve the complete set of 
+<a href="show_wcem_edges.html">1920 edge configurations</a> that are possible
+after the first two layers are solved using the Working Corner/Edge Method.</p>
+</center>
+<pre>
+   1 Solved in 0 steps
+  13 Solved in 1 steps
+  75 Solved in 2 steps
+ 249 Solved in 3 steps
+ 466 Solved in 4 steps
+ 534 Solved in 5 steps
+ 410 Solved in 6 steps
+ 152 Solved in 7 steps
+  20 Solved in 8 steps
+1920 Total
+</pre>
+<center>
+</center>
+The Solve Sequences were used equally on half of the configurations (960):
+<br><br>
+<table>
+ <tr><td>Solve Sequence</td><td width=30><td>Configurations</td></tr>
+ <tr><td>1</td><td><td>480</td></tr>
+ <tr><td>2</td><td><td>480</td></tr>
+</table>
+<br>
+Average Number of Solution Moves:<br>
+20.13
+<br><br>
+<a href=wcem_edges_fdist.html>Frequency Distribution of Solution Move Counts</a>
+<br><br>
+<center>
+<a href="javascript: history.go(-1)">Back</a>
+<br><br>
+</center>
+</body>
+</html>

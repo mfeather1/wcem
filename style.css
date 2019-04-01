@@ -1,0 +1,15 @@
+body {
+    background-color: #ffffff;
+    margin-left: 10%; 
+    margin-right: 10%;
+}
+td {
+    text-align: justify; 
+    text-justify: inter-word;
+}
+p {
+    margin:0;
+    text-align: justify; 
+    text-justify: inter-word;
+}
+

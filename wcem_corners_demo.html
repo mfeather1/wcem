@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+ <title> Working Corner/Edge Method - Top Layer Random Corners </title>
+ <meta name="robots" content="noindex, nofollow">
+ <link rel=icon href=mini_cube.png type=image/png>
+ <link rel="stylesheet" type="text/css" href="style.css">
+ <meta name=viewport content="width=device-width, initial-scale=1">
+ <script src=wcem_corners.js></script>
+ <script src=wcem_corners_log.js></script>
+</head>
+<body><center><font size=+2>
+Working Corner/Edge Method <br>
+Top Layer Random Corners </font>
+<br>
+<script>
+var rand = Math.floor(Math.random()*corners.length);
+facelets = corners[rand].substr(0,54);
+move = corners[rand].substr(55);
+document.write("<iframe width=300 height=300 scrolling=no frameborder=0\
+  src=\"AnimCube.html?config=AnimCube.cfg&position=lluuu&edit=1&move=" +
+  move + "&facelets=" + facelets + "\">\
+  </iframe>");
+show_buttons();
+document.write("</center>");
+rand++;
+document.write('<br>Cube ' + rand + '<br>');
+for (var i=0, done=0; i < corners_log.length; i++) {
+  if (corners_log[i].substr(0,4) == rand) {
+    for (var j=i+1; j < i+20; j++) {
+      if (corners_log[j].substr(0,4) == "Step") 
+        document.write('<br>');
+      if (corners_log[j].substr(0,4) == rand+1) {
+        done = 1;
+        break;
+      }
+      document.write(corners_log[j] + '<br>');
+    }
+  }
+  if (done == 1)
+    break;
+}
+function show_buttons() {
+document.write("\
+<table border=0>\
+ <tr height=15>\
+ <tr>\
+  <td>\
+   <form method=post action=wcem_corners_js.html>\
+    <input name=op value=random type=hidden>\
+    <input name=hist value=0 type=hidden>\
+    <input value=Next type=submit\
+           style=height:32px;width:100px;>\
+   </form>\
+  </td>\
+  <td width=20>\
+  <td>\
+   <form method=get action=wcem_corners_help.html>\
+    <input value='Help' type=submit style=height:32px;width:100px;>\
+   </form>\
+  </td>\
+ </tr>\
+</table>");
+}
+</script>
+<br>
+<center><a href=index.html>Back</a></center>
+<br>
+</center>
+</body>
+</html>

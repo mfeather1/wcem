@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+ <title> Working Corner/Edge Method - Top Layer Random Edges </title>
+ <meta name="robots" content="noindex, nofollow">
+ <link rel=icon href=mini_cube.png type=image/png>
+ <link rel="stylesheet" type="text/css" href="style.css">
+ <meta name=viewport content="width=device-width, initial-scale=1">
+ <script src=wcem_edges.js></script>
+ <style> td {text-align:center} </style>
+<script>
+function show() {
+  var start = document.getElementById('start').value;
+  console.log('start = ' + start);
+}
+</script>
+</head>
+<body><center><font size=+2>
+Working Corner/Edge Method <br>
+Testing an Edge Solving Strategy <br>
+(1920 edge configs) </font>
+<br><br>
+<input id=start value=1 style=width:50px>
+<button onclick="show()">Go</button>
+<div id=cubes></div>
+<br>
+<script>
+show();
+function show() {
+  var start = document.getElementById('start').value;
+  if (start < 1) 
+    start = 1;
+  if (start > edges.length - 11)
+    start = edges.length - 11;
+  var str = '<table cellpadding=10>';
+  for (var i=0; i < 3; i++) {
+    str += '<tr>';
+    for (var j=0; j < 4; j++) {
+      str += '<td>';
+      var n = parseInt(start) + i*4 + j - 1;
+      facelets = edges[n].substr(0,54);
+      move = edges[n].substr(55);
+      var nn = n+1;
+      str += '<td>' + nn + '<br>';
+      str += '<iframe width=140 height=140 scrolling=no frameborder=0';
+      str += '  src=\"AnimCube.html?config=AnimCube.cfg&position=lluuu&edit=1&move=';
+      str += move + "&facelets=" + facelets + '">';
+      str += '</iframe>';
+      str += '</td>';
+    }
+    str += '</tr>';
+  }
+  str += '<table>';
+  document.getElementById('cubes').innerHTML = str;
+  if (n+2 > edges.length)
+    n = edges.length - 2;
+  document.getElementById('start').value = n + 2;
+}
+</script>
+<center><a href=index.html>Back</a></center>
+<br>
+</center>
+</body>
+</html>

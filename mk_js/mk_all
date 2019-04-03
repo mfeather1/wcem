@@ -10,7 +10,7 @@ main() {
   make_corners
   make_edges
   # these files not needed for web pages
-  # rm corners.db corners.tmp corners.log edges.db edges.tmp edges.log 
+  # rm corners.db corners.tmp edges.db edges.tmp
 }
 
 make_corners() {

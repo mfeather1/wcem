@@ -1,0 +1,252 @@
+DB=edges.tmp
+MAX=15
+
+# c1=UF  c2=FR  c3=RU  C4=UL  C5=UB
+
+C10=RY;  C20=YB;  C30=BR;  C40=RG;  C50=RW
+C11=YR;  C21=BY;  C31=RB;  C41=GR;  C51=WR
+
+o1=lRlRRYlRllGllYllBllWlGGGYYRBBBWWWGGGYYllBBWWWOOlOOOOOO
+o2=lRlRRRlBllGllYllBllWlGGGYYYRBBWWWGGGYYllBBWWWOOlOOOOOO
+ss1="U R U R' U R U R' U"
+ss2="U F' U F U F' U F U"
+#s2="U' F' U' F U' F' U' F U'"
+
+permuted()
+{
+  n=0
+  if [ ${1:0:1} != 1 ]; then ((n++)); fi
+  if [ ${2:0:1} != 2 ]; then ((n++)); fi
+  if [ ${3:0:1} != 3 ]; then ((n++)); fi
+  if [ ${4:0:1} != 4 ]; then ((n++)); fi
+  if [ ${5:0:1} != 5 ]; then ((n++)); fi
+  echo $n
+}
+
+ff()  # output form: 10 20 30 40 50
+{
+  gg $1
+  gg $2
+  gg $3
+  gg $4
+  gg $5
+}
+
+gg()
+{
+  if   [ $1 = $C10 ]; then  echo -n "10 "
+  elif [ $1 = $C11 ]; then  echo -n "11 "
+  elif [ $1 = $C20 ]; then  echo -n "20 "
+  elif [ $1 = $C21 ]; then  echo -n "21 "
+  elif [ $1 = $C30 ]; then  echo -n "30 "
+  elif [ $1 = $C31 ]; then  echo -n "31 "
+  elif [ $1 = $C40 ]; then  echo -n "40 "
+  elif [ $1 = $C41 ]; then  echo -n "41 "
+  elif [ $1 = $C50 ]; then  echo -n "50 "
+  elif [ $1 = $C51 ]; then  echo -n "51 "
+  fi
+}
+
+hh()  # output form: UF FR UR UL UB
+{
+  # UF   7 13 
+  # FR  26 27
+  # RU  16 5 
+  # LU   3 10
+  # BU   1 19
+  c1=${1:7:1}${1:13:1}
+  c2=${1:26:1}${1:27:1}
+  c3=${1:16:1}${1:5:1}
+  c4=${1:3:1}${1:10:1}
+  c5=${1:1:1}${1:19:1}
+  echo $c1 $c2 $c3 $c4 $c5
+}
+
+get_parity()
+{
+  parity ${1:0:1}${2:0:1}${3:0:1}${4:0:1}${5:0:1} | 
+  grep Parity | awk '{print $3}'
+}
+
+count_solved()
+{
+  s=0
+  if [ $1 = 10 ]; then ((s++)); fi
+  if [ $3 = 30 ]; then ((s++)); fi
+  if [ $4 = 40 ]; then ((s++)); fi
+  if [ $5 = 50 ]; then ((s++)); fi
+  echo $s
+}
+
+check_if_ul_or_ub_can_be_solved()
+{
+  mv=""
+  b=`mov2 $a U`
+  c4=${b:3:1}${b:10:1}
+  c5=${b:1:1}${b:19:1}
+  if [ $c4 = RG ] || [ $c5 = RW ]; then 
+     mv="U "
+  else 
+    b=`mov2 $a U2`
+    c4=${b:3:1}${b:10:1}
+    c5=${b:1:1}${b:19:1}
+    if [ $c4 = RG ] || [ $c5 = RW ]; then 
+      mv=U2
+    else 
+      b=`mov2 $a "U'"`
+      c4=${b:3:1}${b:10:1}
+      c5=${b:1:1}${b:19:1}
+      if [ $c4 = RG ] || [ $c5 = RW ]; then 
+        mv="U'"
+      fi
+    fi
+  fi
+  if [ "$mv" != "" ]; then
+    if [ $c4 = RG ] && [ $c5 = RW ]; then
+      echo "$mv UL & UB"
+    elif [ $c4 = RG ]; then
+      echo "$mv UL"
+    elif [ $c5 = RW ]; then
+      echo "$mv UB"
+    fi
+  fi 
+}
+
+cat $DB | 
+while read a; do
+  ((cct++))
+  #echo Cube $cct
+  echo -n "$a "
+  hhv=`hh $a`    # UF FR UR UL UB
+  ffv=`ff $hhv`  # 10 20 30 40 50
+  parity=`get_parity $ffv`
+  # echo Parity = $parity
+  mct=0
+  ct=1
+  flag=0
+  fmv=0
+  ss=0
+  while [ "$ffv" != "10 20 30 40 50 " ]; do
+    # echo -n "Step $ct: " 
+    sct=`count_solved $ffv`
+    if [ $sct = 3 ]; then
+      if [ $a = $o1 ]; then 
+        # echo Use Solve Sequence 1
+        ((mct+=9))
+        echo -n $ss1
+        a=`mov2 $a "$ss1"`
+        flag=1
+        ss=1
+      elif [ $a = $o2 ]; then 
+        # echo Use Solve Sequence 2
+        ((mct+=9))
+        echo -n $ss2
+        a=`mov2 $a "$ss2"`
+        flag=1
+        ss=2
+      fi
+    fi
+    if [ $flag = 0 ]; then
+      set $ffv
+      skip=0
+      # solve UL or UB position by twisting top face if possible (first move)
+      if [ $fmv = 0 ]; then
+        fmv=1
+        if [ $4 != 40 ] && [ $5 != 50 ]; then
+          mv="`check_if_ul_or_ub_can_be_solved $ffv`"
+          if [ "$mv" != "" ]; then 
+            cubie=${mv:2}
+            mv=${mv:0:2}
+            mv=${mv/ /}
+            # echo Twist top face to solve $cubie position 
+            skip=1  
+          fi
+        fi
+      fi
+      if [ $skip = 0 ]; then
+        # if working edge = UF or UL then solve
+        if [ ${2:0:1} = 4 ] || [ ${2:0:1} = 5 ]; then
+          # echo "Solve working edge"
+          if [ $2 = 40 ]; then
+            mv="U2' R U2 R'"
+          elif [ $2 = 41 ]; then
+            mv="U' F' U F"
+          elif [ $2 = 50 ]; then
+            mv="U R U' R'"
+          elif [ $2 = 51 ]; then
+            mv="U2 F' U2' F"
+          fi
+        # If UF or UL unsolved then move one of them to working edge position
+        elif [ $4 != 40 ] || [ $5 != 50 ]; then
+          if [ ${1:0:1} = 4 ]; then 
+            #echo "Move UL cubie (currently in UF position) to working edge"
+            mv="R U' R' U"
+          elif [ ${1:0:1} = 5 ];then 
+            #echo "Move UB cubie (currently in UF position) to working edge"
+            mv="R U' R' U"
+  
+          elif [ ${3:0:1} = 4 ]; then
+            #echo "Move UL cubie (currently in UR position) to working edge"
+            mv="F' U F U'"
+          elif [ ${3:0:1} = 5 ]; then
+            #echo "Move UB cubie (currently in UR position) to working edge"
+            mv="F' U F U'"
+  
+          elif [ $4 = 41 ]; then
+            #echo "Move misoriented UL cubie to working edge"
+            mv="R U2' R' U2"
+          elif [ ${4:0:1} = 5 ]; then
+            #echo "Move UB cubie (currently in UL position) to working edge"
+            mv="R U2 R' U2'"
+  
+          elif [ ${5:0:1} = 4 ]; then
+            #echo "Move UL cubie (currently in UB position) to working edge"
+            mv="R U R' U'"
+          elif [ $5 = 51 ]; then
+            #echo "Move misoriented UB cubie to working edge"
+            mv="R U R' U'"
+          fi
+        # If working edge = UF or UR then solve
+        elif [ ${2:0:1} = 1 ] || [ ${2:0:1} = 3 ]; then
+          #echo "Solve working edge"
+          if [ $2 = 10 ]; then
+            mv="U' R  U R'"
+          elif [ $2 = 11 ]; then
+            mv="F' U F U'"
+          elif [ $2 = 30 ]; then
+            mv="U F' U' F"
+          elif [ $2 = 31 ]; then
+            mv="R U' R' U"
+          fi
+        else  #move misplaced cubie to working edge position
+          if [ ${1:0:1} != 1 ] || [ ${1:1:1} = 1 ]; then
+            #echo Move unsolved cubie in UF position to working edge
+            mv="R U' R' U"
+          elif [ ${3:0:1} != 3 ] || [ ${3:1:1} = 1 ]; then
+            #echo Move unsolved cubie in UR position to working edge
+            mv="F' U F U'"
+          fi
+        fi
+      fi  # cont
+      a=`mov2 $a "$mv"`
+      if [ $skip = 1 ]; then 
+        ((mct++))
+      else
+        ((mct+=4))
+      fi
+      echo -n "$mv - "
+    fi
+    hhv=`hh $a`
+    ffv=`ff $hhv`
+    # echo
+    ((ct++))
+    if [ $ct -gt $MAX ]; then
+      echo Stuck in loop, break after $MAX iterations
+      break
+    fi
+  done
+  echo
+done |
+sed "s/ - $//"
+
+exit 0

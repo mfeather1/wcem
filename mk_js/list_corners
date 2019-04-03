@@ -1,0 +1,69 @@
+# perms * twist / 2 = #configs
+#   5!  *  3^4  / 2 = 120 * 81 / 2 = 4860
+
+#        UFL
+arr[10]="RYG RGY"
+arr[11]="GRY GYR"
+arr[12]="YGR YRG"
+
+#        UFR
+arr[20]="RYB RBY"
+arr[21]="YBR YRB"
+arr[22]="BRY BYR"
+
+#        UBR
+arr[30]="RWB RBW"
+arr[31]="BRW BWR"
+arr[32]="WBR WRB"
+
+#        UBL
+arr[40]="RWG RGW"
+arr[41]="WGR WRG"
+arr[42]="GRW GWR"
+
+#        DFR
+arr[50]="OYB OBY"
+arr[51]="BOY BYO"
+arr[52]="YBO YOB"
+
+gg()
+{
+  n=${1:0:1};  v=(${arr[$1]});
+  if [ $n = 2 ] || [ $n = 4 ]; then echo -n "${v[1]} "; else echo -n "${v[0]} "; fi
+  n=${2:0:1};  v=(${arr[$2]});
+  if [ $n = 2 ] || [ $n = 4 ]; then echo -n "${v[0]} "; else echo -n "${v[1]} "; fi
+  n=${3:0:1};   v=(${arr[$3]});  
+  if [ $n = 2 ] || [ $n = 4 ]; then echo -n "${v[1]} "; else echo -n "${v[0]} "; fi
+  n=${4:0:1};  v=(${arr[$4]});
+  if [ $n = 2 ] || [ $n = 4 ]; then echo -n "${v[0]} "; else echo -n "${v[1]} "; fi 
+  n=${5:0:1};  v=(${arr[$5]}); 
+  if [ $n = 2 ] || [ $n = 4 ]; then echo -n "${v[1]} "; else echo -n "${v[0]} "; fi 
+}
+
+ff() {
+  for a in {0..2}; do
+    for b in {0..2}; do
+      for c in {0..2}; do
+        for d in {0..2}; do
+          for e in {0..2}; do
+            if [ $((($a+$b+$c+$d+$e)%3)) = 0 ]; then
+              gg $1$a $2$b $3$c $4$d $5$e
+              echo
+            fi
+          done
+        done
+      done
+    done
+  done
+}
+
+
+perm 12345 | sed "s/./& /g" |
+while read a; do 
+  n=`parity ${a// }`
+  if [ $n = 0 ]; then 
+    ff $a
+  fi
+done
+
+exit 0

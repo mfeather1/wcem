@@ -1,0 +1,38 @@
+#                1         2         3         4         5
+#      012345678901234567890123456789012345678901234567890123
+# HOME=R R R R RG GY YB BW WGGGYY  BBWWWGGGYYYBBBWWWOOOOOOOOO
+
+# UF   7 13 
+# FR  26 27
+# RU  16 5 
+# LU   3 10
+# BU   1 19
+
+list_edges | 
+while read a; do
+  set $a
+  p07=${1:0:1} 
+  p13=${1:1:1} 
+  p26=${2:0:1}
+  p27=${2:1:1}
+  p16=${3:0:1}
+  p05=${3:1:1}
+  p03=${4:0:1}
+  p10=${4:1:1}
+  p01=${5:0:1}
+  p19=${5:1:1}
+  # echo R $p01 R $p03 R $p05 R $p07 RG $p10 GY $p13 YB $p16 BW $p19 WGGGYY $p26 $p27 BBWWWGGGYYYBBBWWWOOOOOOOOO | sed "s/ //g"
+   echo l $p01 l $p03 R $p05 l $p07 ll $p10 ll $p13 ll $p16 ll $p19 lGGGYY $p26 $p27 BBWWWGGGYYllBBWWWOOlOOOOOO | sed "s/ //g"
+done
+
+exit 0
+             00 01 02
+             03 04 05
+             06 07 08
+   09 10 11  12 13 14  15 16 17  18 19 20
+   21 22 23  24 25 26  27 28 29  30 31 32
+   33 34 35  36 37 38  39 40 41  42 43 44
+             45 46 47
+             48 49 50
+             51 52 53
+

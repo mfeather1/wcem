@@ -1,0 +1,7 @@
+echo "var edges = ["
+cat edges.tmp2 |
+while read a; do
+  echo `animcube ${a:0:54}` ${a:55}
+done |
+sed 's/^/"/; s/$/",/' |
+sed "\$s/,/];/"

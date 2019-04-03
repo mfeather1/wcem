@@ -1,0 +1,13 @@
+echo "var edges_log = ["
+cat edges.log |
+grep -v ^$ |
+grep -v Stats |
+while read a; do
+  if [ "${a:0:4}" = Cube ]; then
+    printf "%04d\n" ${a:5}
+  else
+    echo $a
+  fi
+done |
+sed 's/^/"/; s/$/",/'
+echo '"1921"];'

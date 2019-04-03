@@ -1,0 +1,63 @@
+to_anim=(6 7 8 3 4 5 0 1 2 45 48 51 46 49 52 47 50 53 12 24
+          36 13 25 37 14 26 38 18 30 42 19 31 43 20 32 44 11
+          10 9 23 22 21 35 34 33 15 27 39 16 28 40 17 29 41)
+
+from_anim=(6 7 8 3 4 5 0 1 2 38 37 36 18 21 24 45 48 51 27 30 
+           33 41 40 39 19 22 25 46 49 52 28 31 34 44 43 42 20 
+           23 26 47 50 53 29 32 35 9 12 15 10 13 16 11 14 17)
+main()
+{
+  if [ $# = 0 ]; then
+    echo -n "Usage: "
+    echo "`basename $0` {cube string}"
+    exit 0
+  fi
+  if [ $# = 1 ]; then
+    cvt_to_animcube $1
+  else
+    cvt_from_animcube $1
+  fi
+}
+
+cvt_to_animcube()
+{
+  for i in {0..53}; do 
+    n=${to_anim[$i]}
+    echo -n ${1:$n:1}
+  done
+  echo
+}
+
+cvt_from_animcube()
+{
+  for i in {0..53}; do 
+    n=${from_anim[$i]}
+    echo -n ${1:$n:1}
+  done
+  echo
+}
+
+make_from_anim_array()
+{
+  s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01"
+
+  declare -A to_num
+  for i in {0..53}; do to_num[${s:$i:1}]=$i; done 
+
+  v=`animcube $s`
+  for i in {0..53}; do 
+    n=${to_num[${v:$i:1}]} 
+    from_anim[$n]=$i; 
+  done
+
+  echo -n "from_anim=( "
+  for i in {0..53}; do
+    echo -n "${from_anim[$i]} "
+  done
+  echo ")"
+}
+
+main $*
+
+exit 0
+

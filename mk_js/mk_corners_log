@@ -1,0 +1,440 @@
+DB=corners.tmp
+MAX=15
+HOME=UUUUUUUUULLLFFFRRRBBBLLLFFFRRRBBBLLLFFFRRRBBBDDDDDDDDD
+
+corner_number=(
+  BOY51 BRW31 BRY22 BWR31 BYO51 BYR22 GRW42 GRY11 GWR42 GYR11 
+  OBY50 OYB50 RBW30 RBY20 RGW40 RGY10 RWB30 RWG40 RYB20 RYG10 
+  WBR32 WGR41 WRB32 WRG41 YBO52 YBR21 YGR12 YOB52 YRB21 YRG12)
+
+ss1="B' D B U2 B' D' B U2 L D' L' U2 L D L' U2"
+ss2="B' D B U B' D' B U2 L D' L' U' L D L' U2"
+ss3="B' D B U' B' D' B U2 L D' L' U L D L' U2"
+
+main () 
+{
+  cat $DB | 
+  while read a; do
+    ct=1
+    mct=0
+    ((cube++))
+    echo Cube $cube
+    eval_corners
+    s=0
+    while [ "$cn" != "10 20 30 40 50 " ] ; do 
+      echo -n "Step $ct: "
+      set $cn
+      mis=`misoriented $cn` 
+      prm=`permuted $cn`
+      if [ $mis = 2 ] && [ $prm = 0 ]; then 
+        use_solve_sequence
+        break
+      elif [ ${5:0:1} = 5 ]; then   # bottom cubie 
+        swap_working_corner
+      elif [ ${a:47:1} = R ]; then  # twisted wrong way
+        swap_working_corner
+      else 
+        f=1
+        solve_working_corner
+      fi
+      ((ct++))
+      if [ $ct -gt $MAX ]; then
+        echo Stuck in loop, break after $MAX iterations
+        break
+      fi
+    done
+    if [ $cube = 1 ]; then ((ct--)); fi
+    echo Stats: $ct $mct $s $parity
+    echo
+  done
+  exit 0
+}
+
+use_solve_sequence()
+{
+  set $cn
+  or="${1:1:1}${2:1:1}${3:1:1}${4:1:1}${5:1:1}"
+  if [ $or = 00012 ]; then mv="";      seq=$ss2; s=2; fi
+  if [ $or = 00021 ]; then mv="Z2 X'"; seq=$ss2; s=2; fi
+  if [ $or = 00102 ]; then mv="X' Z";  seq=$ss1; s=1; fi
+  if [ $or = 00120 ]; then mv="Z2 Y";  seq=$ss3; s=3; fi
+  if [ $or = 00201 ]; then mv="Z Y";   seq=$ss1; s=1; fi
+  if [ $or = 00210 ]; then mv="Z X'";  seq=$ss3; s=3; fi
+  if [ $or = 01002 ]; then mv="";      seq=$ss3; s=3; fi
+  if [ $or = 01020 ]; then mv="X' Y2"; seq=$ss1; s=1; fi
+  if [ $or = 01200 ]; then mv="X Z";   seq=$ss3; s=3; fi
+  if [ $or = 02001 ]; then mv="X2 Z";  seq=$ss3; s=3; fi
+  if [ $or = 02010 ]; then mv="X'";    seq=$ss1; s=1; fi
+  if [ $or = 02100 ]; then mv="X'";    seq=$ss3; s=3; fi
+  if [ $or = 10002 ]; then mv="";      seq=$ss1; s=1; fi
+  if [ $or = 10020 ]; then mv="Z2 X'"; seq=$ss3; s=3; fi
+  if [ $or = 10200 ]; then mv="X' Y";  seq=$ss1; s=1; fi
+  if [ $or = 12000 ]; then mv="Y";     seq=$ss3; s=3; fi
+  if [ $or = 20001 ]; then mv="Y2";    seq=$ss1; s=1; fi
+  if [ $or = 20010 ]; then mv="X' Z'"; seq=$ss3; s=3; fi
+  if [ $or = 20100 ]; then mv="X' Y'"; seq=$ss1; s=1; fi
+  if [ $or = 21000 ]; then mv="Y' Z'"; seq=$ss3; s=3; fi
+  echo Use Solve Sequence $s
+  moves="$mv $seq"
+  moves=`echo $moves | sed "s/^ //"`
+  n=`echo $moves | wc -w`
+  ((mct+=n))
+  echo "$moves ($mct)"
+  a=`mov2 $a "$mv $seq"`
+  unc=`uncolor $a`
+  if [ $unc != $HOME ]; then
+    echo "ERROR: cube not be solved by use_solve_sequence()"
+    echo $unc
+    exit 0
+  fi
+}
+
+swap_working_corner()
+{
+  echo Trade working corner for another
+
+  # move 1 
+  L=`count L $rf`
+  R=`count R $rf`
+  if [ $L -gt $R ]; then side=L; else side=R; fi
+  mv1=""
+  if [ $side = R ]; then
+    set ${rf//U/R}
+    if   [ $3 = B ]; then mv1=N
+    elif [ $4 = B ]; then mv1=U
+    elif [ $2 = B ]; then mv1="U'"
+    elif [ $1 = B ]; then mv1=U2; fi
+    if [ "$mv1" = "" ]; then
+      if   [ $3 = R ]; then mv1=N
+      elif [ $4 = R ]; then mv1=U
+      elif [ $2 = R ]; then mv1="U'"
+      elif [ $1 = R ]; then mv1=U2; fi
+    fi
+  elif [ $side = L ]; then
+    set ${rf//U/L}
+    if   [ $1 = B ]; then mv1=N
+    elif [ $2 = B ]; then mv1=U
+    elif [ $4 = B ]; then mv1="U'"
+    elif [ $3 = B ]; then mv1=U2; fi
+    if [ "$mv1" = "" ]; then
+      if   [ $1 = L ]; then mv1=N
+      elif [ $2 = L ]; then mv1=U
+      elif [ $4 = L ]; then mv1="U'"
+      elif [ $3 = L ]; then mv1=U2; fi
+    fi
+  fi
+
+  if [ $mv1 != N ]; then
+    rf=`apply_move_to_rf ${mv1:0:2}`
+  fi
+
+  # move 2 
+  if   [ $side = R ]; then mv2="B' D B"
+  elif [ $side = L ]; then mv2="L D' L'"; fi
+
+  # move 3
+  mv3=""
+  if [ $side = R ]; then
+    set ${rf//U/R}
+    if   [ $4 = R ]; then mv3=U
+    elif [ $2 = R ]; then mv3="U'"
+    elif [ $1 = R ]; then mv3=U2; fi
+    if [ "$mv3" = "" ]; then
+      if   [ $4 = B ]; then mv3=U
+      elif [ $2 = B ]; then mv3="U'"
+      elif [ $1 = B ]; then mv3=U2; fi
+    fi
+  elif [ $side = L ]; then
+    set ${rf//U/L}
+    if   [ $2 = L ]; then mv3=U
+    elif [ $4 = L ]; then mv3="U'"
+    elif [ $3 = L ]; then mv3=U2; fi
+    if [ "$mv3" = "" ]; then
+      if   [ $2 = B ]; then mv3=U
+      elif [ $4 = B ]; then mv3="U'"
+      elif [ $3 = B ]; then mv3=U2; fi
+    fi
+  fi
+
+  # move 4 
+  if   [ $side = R ]; then mv4="B' D' B"
+  elif [ $side = L ]; then mv4="L D L'"; fi
+
+  # move 5
+  if [ $mv1 = N ]; then mv1=""; fi
+  mv5=`get_last_move $mv1 $mv3`
+
+  # apply moves
+  moves="$mv1 $mv2 $mv3 $mv4 $mv5"
+  moves=`echo $moves | sed "s/^ //"`
+  n=`echo $moves | wc -w`
+  ((mct+=n))
+  echo "$moves ($mct)"
+  a=`mov2 $a "$moves"`
+  eval_corners
+}
+
+solve_working_corner()
+{
+  echo Solve working corner and get another
+
+  # move 1
+  solve_wc  # sets mv1
+
+  # move 2
+  if [ ${mv1:0:1} = U ]; then
+    rf=`apply_move_to_rf ${mv1:0:2}`
+  fi
+  mv2=""
+  if [ $side = R ]; then
+    set ${rf//U/R}
+    if   [ $4 = R ]; then mv2=U
+    elif [ $2 = R ]; then mv2="U'"
+    elif [ $1 = R ]; then mv2=U2; fi
+    if [ "$mv2" = "" ]; then
+      if   [ $4 = B ]; then mv2=U
+      elif [ $2 = B ]; then mv2="U'"
+      elif [ $1 = B ]; then mv2=U2; fi
+    fi
+  elif [ $side = L ]; then
+    set ${rf//U/L}
+    if   [ $2 = L ]; then mv2=U
+    elif [ $4 = L ]; then mv2="U'"
+    elif [ $3 = L ]; then mv2=U2; fi
+    if [ "$mv2" = "" ]; then
+      if   [ $2 = B ]; then mv2=U
+      elif [ $4 = B ]; then mv2="U'"
+      elif [ $3 = B ]; then mv2=U2; fi
+    fi
+  fi
+  if [ "$mv2" = "" ]; then
+    if [ $side = R ]; then
+      if   [ $4 = L ]; then mv2=U
+      elif [ $2 = L ]; then mv2="U'"
+      elif [ $1 = L ]; then mv2=U2; fi
+    elif [ $side = L ]; then
+      if   [ $2 = R ]; then mv2=U
+      elif [ $4 = R ]; then mv2="U'"
+      elif [ $3 = R ]; then mv2=U2; fi
+    fi
+  fi
+  
+  # move 3
+  if   [ $side = R ]; then mv3="B' D' B"
+  elif [ $side = L ]; then mv3="L D L'"; fi
+
+  # move 4
+  mv4=`get_last_move ${mv1:0:2} $mv2`
+
+  # apply moves
+  moves="$mv1 $mv2 $mv3 $mv4"
+  n=`echo $moves | wc -w`
+  ((mct+=n))
+  echo "$moves ($mct)"
+  a=`mov2 $a "$moves"`
+  eval_corners
+}
+
+get_last_move()
+{
+  n=0
+  if   [ "$1" = U ]; then ((n++))
+  elif [ "$1" = U2 ]; then ((n+=2))
+  elif [ "$1" = "U'" ]; then ((n--)); fi
+
+  if   [ "$2" = U ]; then ((n++))
+  elif [ "$2" = U2 ]; then ((n+=2))
+  elif [ "$2" = "U'" ]; then ((n--)); fi
+
+  if   [ $n = 0 ]; then echo ""
+  elif [ $n = 1 ]; then echo "U'"
+  elif [ $n = 2 ]; then echo "U2"
+  elif [ $n = 3 ]; then echo "U"
+  elif [ $n = 4 ]; then echo ""
+  elif [ $n = -1 ]; then echo "U"
+  elif [ $n = -2 ]; then echo "U2"; fi
+}
+
+apply_move_to_rf()
+{
+  rfa=($rf)
+  if [ $1 = U ]; then
+    tmp=${rfa[0]};
+    rfa[0]=${rfa[1]};
+    rfa[1]=${rfa[2]};
+    rfa[2]=${rfa[3]};
+    rfa[3]=$tmp;   
+  elif [ $1 = "U'" ]; then
+    tmp=${rfa[0]};
+    rfa[0]=${rfa[3]};
+    rfa[3]=${rfa[2]};
+    rfa[2]=${rfa[1]};
+    rfa[1]=$tmp;   
+  elif [ $1 = "U2" ]; then
+    tmp=${rfa[0]};
+    rfa[0]=${rfa[2]};
+    rfa[2]=$tmp;
+    tmp=${rfa[1]};
+    rfa[1]=${rfa[3]};
+    rfa[3]=$tmp;
+  fi 
+  echo ${rfa[*]}
+}
+
+solve_wc()
+{ 
+  if   [ ${a:38:1} = G ] && [ ${a:47:1} = Y ] && [ ${a:39:1} = R ]; then
+    mv1="L D' L'"
+    side=L
+  elif [ ${a:38:1} = R ] && [ ${a:47:1} = G ] && [ ${a:39:1} = Y ]; then
+    mv1="U2' B' D B"
+    side=R
+  elif [ ${a:38:1} = R ] && [ ${a:47:1} = B ] && [ ${a:39:1} = W ]; then
+    mv1="B' D B"
+    side=R
+  elif [ ${a:38:1} = B ] && [ ${a:47:1} = W ] && [ ${a:39:1} = R ]; then
+    mv1="U2 L D' L'"
+    side=L
+  elif [ ${a:38:1} = R ] && [ ${a:47:1} = Y ] && [ ${a:39:1} = B ]; then
+    mv1="U' B' D B"
+    side=R
+  elif [ ${a:38:1} = Y ] && [ ${a:47:1} = B ] && [ ${a:39:1} = R ]; then
+    mv1="U L D' L'"
+    side=L
+  elif [ ${a:38:1} = W ] && [ ${a:47:1} = G ] && [ ${a:39:1} = R ]; then
+    mv1="U' L D' L'"
+    side=L
+  elif [ ${a:38:1} = R ] && [ ${a:47:1} = W ] && [ ${a:39:1} = G ]; then
+    mv1="U B' D B"
+    side=R
+  else 
+    echo "Unhandled cubie in solve_wc()"
+    echo ${a:38:1} ${a:47:1} ${a:39:1}
+  fi
+}
+
+eval_corners()
+{
+  cl=`get_corner_letters $a`
+  cn=`get_corner_numbers $cl`
+  rf=`red_facelets $cn`
+}
+
+get_corner_numbers()
+{
+  for i in {1..5}; do
+    get_corner_number $1
+    shift
+  done
+}
+
+get_corner_number()
+{
+  for i in ${corner_number[*]}; do
+    if [ ${i:0:3} = $1 ]; then
+      echo -n "${i:3} "
+      return
+    fi
+  done
+}
+
+get_corner_letters()
+{
+  # UFL  6 12 11     
+  # UFR  8 14 15
+  # UBR  2 18 17
+  # UBL  0 20  9
+  # DFR 47 38 39
+  c1=${1:6:1}${1:12:1}${1:11:1}
+  c2=${1:8:1}${1:14:1}${1:15:1}
+  c3=${1:2:1}${1:18:1}${1:17:1}
+  c4=${1:0:1}${1:20:1}${1:9:1}
+  c5=${1:47:1}${1:38:1}${1:39:1}
+  echo $c1 $c2 $c3 $c4 $c5
+}
+
+red_facelets()
+{
+  # B = bottom cubie (no red facelet)
+  # L = left facing red facelet
+  # R = right facing red facelet
+  # U = up facing red facelet
+  # S = solved cubie
+
+  c1=B; c2=B; c3=B; c4=B
+
+  if [ ${a:9:1} = R ];  then c4=R; fi
+  if [ ${a:12:1} = R ]; then c1=R; fi
+  if [ ${a:15:1} = R ]; then c2=R; fi
+  if [ ${a:18:1} = R ]; then c3=R; fi
+
+  if [ ${a:11:1} = R ]; then c1=L; fi
+  if [ ${a:14:1} = R ]; then c2=L; fi
+  if [ ${a:17:1} = R ]; then c3=L; fi
+  if [ ${a:20:1} = R ]; then c4=L; fi
+
+  if [ ${a:0:1} = R ]; then c4=U; fi
+  if [ ${a:2:1} = R ]; then c3=U; fi
+  if [ ${a:6:1} = R ]; then c1=U; fi
+  if [ ${a:8:1} = R ]; then c2=U; fi
+
+  if [ $1 = 10 ]; then c1=S; fi  
+  if [ $2 = 20 ]; then c2=S; fi
+  if [ $3 = 30 ]; then c3=S; fi
+  if [ $4 = 40 ]; then c4=S; fi 
+
+  echo $c1 $c2 $c3 $c4
+}
+
+misoriented()
+{
+  n=0
+  if [ ${1:1:1} != 0 ]; then ((n++)); fi
+  if [ ${2:1:1} != 0 ]; then ((n++)); fi
+  if [ ${3:1:1} != 0 ]; then ((n++)); fi
+  if [ ${4:1:1} != 0 ]; then ((n++)); fi
+  if [ ${5:1:1} != 0 ]; then ((n++)); fi
+  echo $n
+}
+
+count()
+{
+  v=$1
+  n=0
+  if [ $v = $2 ]; then ((n++)); fi
+  if [ $v = $3 ]; then ((n++)); fi
+  if [ $v = $4 ]; then ((n++)); fi
+  if [ $v = $5 ]; then ((n++)); fi
+  echo $n
+}
+
+get_bottom_cubie_position()
+{
+  if   [ $1 = B ]; then echo 1
+  elif [ $2 = B ]; then echo 2
+  elif [ $3 = B ]; then echo 3
+  elif [ $4 = B ]; then echo 4; fi 
+}
+
+permuted()
+{
+  n=0
+  if [ ${1:0:1} != 1 ]; then ((n++)); fi
+  if [ ${2:0:1} != 2 ]; then ((n++)); fi
+  if [ ${3:0:1} != 3 ]; then ((n++)); fi
+  if [ ${4:0:1} != 4 ]; then ((n++)); fi
+  if [ ${5:0:1} != 5 ]; then ((n++)); fi
+  echo $n
+}
+
+uncolor()
+{
+  U=${a:4:1};  D=${a:49:1}
+  L=${a:22:1}; R=${a:28:1}
+  F=${a:25:1}; B=${a:31:1}
+  echo $a | tr $U$D$L$R$F$B UDLRFB
+}
+
+main $*
+
+exit 0

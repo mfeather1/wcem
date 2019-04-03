@@ -1,4 +1,4 @@
-DB=corners.tmp
+DB=corners.db
 MAX=15
 HOME=UUUUUUUUULLLFFFRRRBBBLLLFFFRRRBBBLLLFFFRRRBBBDDDDDDDDD
 
@@ -44,7 +44,7 @@ main ()
       fi
     done
     if [ $cube = 1 ]; then ((ct--)); fi
-    echo Stats: $ct $mct $s $parity
+    echo Stats: $ct $mct $s
     echo
   done
   exit 0

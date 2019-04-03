@@ -1,0 +1,23 @@
+if [ $# = 0 ]; then
+  echo -n "Usage: "
+  echo "`basename $0` {edges.log or corners.log}"
+  exit 0
+fi
+echo Frequency Distribution of Steps:
+grep Stats $1 | awk '{print $2}' | sort -n | uniq -c | 
+  awk '{printf("%4d Solved in %d steps\n", $1, $2)}'
+echo "  " `grep Stuck $1 | wc -l` Stuck in loop
+echo
+echo Solve Sequence Usage:
+grep Stats $1 | awk '{print $4}' | sort | uniq -c
+echo
+echo Average Number of Moves:
+grep Stats $1 | awk '{s+=$3;ct++}END{printf("%5.2f\n", s/ct)}'
+echo
+echo Press Enter for Frequency Distribution of Moves
+read a
+echo Frequency Distribution of Moves: 
+echo Count  Moves
+grep Stats $1 | awk '{print $3}' | sort -n | uniq -c |
+awk '{printf("%4d  %2d\n", $1, $2)}'
+exit 0

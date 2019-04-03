@@ -9,20 +9,21 @@ main() {
   # make parity
   make_corners
   make_edges
-  # rm corners.tmp corners.tmp2 edges.tmp edges.tmp2 corners.log edges.log 
+  # these files not needed for web pages
+  # rm corners.db corners.tmp corners.log edges.db edges.tmp edges.log 
 }
 
 make_corners() {
-  mk_corners > corners.tmp
-  solve_corners > corners.tmp2
+  mk_corners > corners.db
+  solve_corners > corners.tmp
   mk_corners_js > wcem_corners.js
   mk_corners_log > corners.log
   mk_corners_log_js > wcem_corners_log.js
 }
 
 make_edges() {
-  mk_edges > edges.tmp
-  solve_edges > edges.tmp2
+  mk_edges > edges.db
+  solve_edges > edges.tmp
   mk_edges_js > wcem_edges.js
   mk_edges_log > edges.log
   mk_edges_log_js > wcem_edges_log.js

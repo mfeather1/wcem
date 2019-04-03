@@ -1,4 +1,4 @@
-DB=edges.tmp
+DB=edges.db
 MAX=15
 
 # c1=UF  c2=FR  c3=RU  C4=UL  C5=UB

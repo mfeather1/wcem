@@ -1,5 +1,5 @@
 echo "var corners = ["
-cat corners.tmp2 |
+cat corners.tmp |
 while read a; do
   echo `animcube ${a:0:54}` ${a:55}
 done |
